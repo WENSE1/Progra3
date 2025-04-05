@@ -1,0 +1,133 @@
+﻿@page "/counter"
+@using LESApplication.Services
+@using LESApplication.Models
+@inject ListaDoblementeEnlazada Lista
+
+
+
+<PageTitle>LED - Eliminar y Ordenar</PageTitle>
+
+<h1>Lista Enlazada Doble - Eliminar y Ordenar</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <button @onclick="EliminarInicio" class="btn btn-danger btn-block mb-2 custom-btn">
+                Eliminar al inicio
+            </button>
+            <button @onclick="EliminarFinal" class="btn btn-danger btn-block mb-2 custom-btn">
+                Eliminar al final
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button @onclick="EliminarAntesDe" class="btn btn-danger btn-block mb-2 custom-btn">
+                Eliminar antes de dato
+            </button>
+            <button @onclick="EliminarDespuesDe" class="btn btn-danger btn-block mb-2 custom-btn">
+                Eliminar después de dato
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button @onclick="EliminarEnPosicion" class="btn btn-danger btn-block mb-2 custom-btn">
+                Eliminar en posición
+            </button>
+            <button @onclick="OrdenarLista" class="btn btn-dark btn-block mb-2 custom-btn">
+                Ordenar lista
+            </button>
+        </div>
+    </div>
+</div>
+
+<h3>Mensajes</h3>
+<div class="alert alert-info">@Mensaje</div>
+
+<h1>Posición</h1>
+<input type="number" name="posicion" @bind-value="Posicion" class="form-control" placeholder="Posición" />
+
+<h1>Dato</h1>
+<input type="text" name="datoX" @bind-value="DatoX" class="form-control" placeholder="Dato X" />
+
+<ul class="list-group">
+    @{
+        Nodo nodoTemporal = Lista.PrimerNodo;
+        <h1>Lista Actual (Del primero al último)</h1>
+        <br />
+        while (nodoTemporal != null)
+        {
+            <li class="list-group-item">@nodoTemporal.Informacion</li>
+            nodoTemporal = nodoTemporal.Siguiente;
+        }
+    }
+</ul>
+
+<ul class="list-group mt-4">
+    @{
+        nodoTemporal = Lista.UltimoNodo;
+        <h1>Lista Actual (Del último al primero)</h1>
+        <br />
+        while (nodoTemporal != null)
+        {
+            <li class="list-group-item">@nodoTemporal.Informacion</li>
+            nodoTemporal = nodoTemporal.Anterior;
+        }
+    }
+</ul>
+
+<style>
+    .custom-btn {
+        width: 100%;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+</style>
+
+@code {
+    public int Posicion { get; set; }
+    public string DatoX { get; set; }
+    public string Mensaje { get; set; }
+
+    public void EliminarInicio()
+    {
+        Mensaje = Lista.EliminarNodoInicio();
+        StateHasChanged();
+    }
+
+    public void EliminarFinal()
+    {
+        Mensaje = Lista.EliminarNodoFinal();
+        StateHasChanged();
+    }
+
+    public void EliminarAntesDe()
+    {
+        if (int.TryParse(DatoX, out int datoX))
+        {
+            Mensaje = Lista.EliminarNodoAntesDe(datoX);
+            StateHasChanged();
+        }
+    }
+
+    public void EliminarDespuesDe()
+    {
+        if (int.TryParse(DatoX, out int datoX))
+        {
+            Mensaje = Lista.EliminarNodoDespuesDe(datoX);
+            StateHasChanged();
+        }
+    }
+
+    public void EliminarEnPosicion()
+    {
+        Mensaje = Lista.EliminarNodoEnPosicion(Posicion);
+        StateHasChanged();
+    }
+
+    public void OrdenarLista()
+    {
+        Mensaje = Lista.OrdenarLista();
+        StateHasChanged();
+    }
+}
