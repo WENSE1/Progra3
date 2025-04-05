@@ -1,0 +1,205 @@
+﻿@page "/"
+@using LESApplication.Models
+@using LESApplication.Services
+@inject LDES Lista
+
+<PageTitle>LDES - Agregar Elementos</PageTitle>
+
+<h1>Lista Doblemente Enlazada - Agregar</h1>
+
+<input type="text" name="valor" @bind-value="Valor" class="form-control" />
+<br />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <button @onclick="AgregarInicio" class="btn btn-success btn-block mb-2 custom-btn">
+                Agregar nodo al Inicio
+            </button>
+            <button @onclick="AgregarFinal" class="btn btn-primary btn-block mb-2 custom-btn">
+                Agregar nodo al final
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button @onclick="AgregarAntesDe" class="btn btn-info btn-block mb-2 custom-btn">
+                Agregar antes de Dato
+            </button>
+            <button @onclick="AgregarDespuesDe" class="btn btn-warning btn-block mb-2 custom-btn">
+                Agregar después de Dato
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button @onclick="AgregarEnPosicion" class="btn btn-dark btn-block mb-2 custom-btn">
+                Agregar en posición
+            </button>
+            <button @onclick="AgregarAntesDePosicion" class="btn btn-secondary btn-block mb-2 custom-btn">
+                Agregar antes de posición
+            </button>
+            <button @onclick="AgregarDespuesDePosicion" class="btn btn-block mb-2 custom-btn" style="background-color: #FF69B4; color: white;">
+                Agregar después de posición
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button @onclick="BuscarElemento" class="btn btn-danger btn-block mb-2 custom-btn">
+                Buscar elemento por posición
+            </button>
+            <button @onclick="RealizarRecorridoRecursivo" class="btn btn-info btn-block mb-2 custom-btn">
+                Recorrido Recursivo
+            </button>
+            <button @onclick="MostrarInverso" class="btn btn-dark btn-block mb-2 custom-btn">
+                Mostrar en orden inverso
+            </button>
+        </div>
+    </div>
+</div>
+
+<h3>Mensajes</h3>
+<div class="alert alert-info">@Mensaje</div>
+
+<h1>Posición</h1>
+<input type="number" name="posicion" @bind-value="Posicion" class="form-control" placeholder="Posición" />
+
+<h1>Dato</h1>
+<input type="text" name="datoX" @bind-value="DatoX" class="form-control" placeholder="Dato X" />
+
+<h1>Lista Actual (Orden normal)</h1>
+<ul class="list-group">
+    @{
+        Nodo nodoTemporal = Lista.PrimerNodo;
+        while (nodoTemporal != null)
+        {
+            <li class="list-group-item">@nodoTemporal.Informacion</li>
+            nodoTemporal = nodoTemporal.Referencia;
+        }
+    }
+</ul>
+
+@if (mostrarInverso)
+{
+    <h1>Lista en orden inverso</h1>
+    <ul class="list-group">
+        @{
+            Nodo nodoFinal = Lista.UltimoNodo;
+            while (nodoFinal != null)
+            {
+                <li class="list-group-item">@nodoFinal.Informacion</li>
+                nodoFinal = nodoFinal.Anterior;
+            }
+        }
+    </ul>
+}
+
+<br />
+<br />
+
+<h3>Resultado del Recorrido Recursivo</h3>
+<ul class="list-group">
+    @foreach (var item in ResultadoRecorrido)
+    {
+        <li class="list-group-item">@item</li>
+    }
+</ul>
+
+<style>
+    .custom-btn {
+        width: 100%;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+</style>
+
+@code {
+    public string Valor { get; set; }
+    public int Posicion { get; set; }
+    public string DatoX { get; set; }
+    public List<string> ResultadoRecorrido { get; set; } = new List<string>();
+    public string Mensaje { get; set; }
+    private bool mostrarInverso = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    public void AgregarFinal()
+    {
+        Mensaje = Lista.AgregarNodoFinal(CrearNodo());
+        StateHasChanged();
+    }
+
+    public void AgregarInicio()
+    {
+        Mensaje = Lista.AgregarNodoInicio(CrearNodo());
+        StateHasChanged();
+    }
+
+    public void AgregarAntesDe()
+    {
+        if (int.TryParse(DatoX, out int datoX))
+        {
+            Mensaje = Lista.AgregarNodoAntesDe(CrearNodo(), datoX);
+            StateHasChanged();
+        }
+    }
+
+    public void AgregarDespuesDe()
+    {
+        if (int.TryParse(DatoX, out int datoX))
+        {
+            Mensaje = Lista.AgregarNodoDespuesDe(CrearNodo(), datoX);
+            StateHasChanged();
+        }
+    }
+
+    public void AgregarEnPosicion()
+    {
+        Mensaje = Lista.AgregarNodoEnPosicion(CrearNodo(), Posicion);
+        StateHasChanged();
+    }
+
+    public void AgregarAntesDePosicion()
+    {
+        Mensaje = Lista.AgregarNodoAntesDePosicion(CrearNodo(), Posicion);
+        StateHasChanged();
+    }
+
+    public void AgregarDespuesDePosicion()
+    {
+        Mensaje = Lista.AgregarNodoDespuesDePosicion(CrearNodo(), Posicion);
+        StateHasChanged();
+    }
+
+    public void BuscarElemento()
+    {
+        Nodo nodoEncontrado = Lista.BuscarElementoPorPosicion(Posicion);
+        if (nodoEncontrado != null)
+        {
+            Valor = nodoEncontrado.Informacion;
+        }
+        else
+        {
+            Valor = "Posición no encontrada";
+        }
+        StateHasChanged();
+    }
+
+    public void RealizarRecorridoRecursivo()
+    {
+        ResultadoRecorrido = Lista.RecorridoRecursivo(Lista.PrimerNodo, new List<string>());
+        StateHasChanged();
+    }
+
+    public void MostrarInverso()
+    {
+        mostrarInverso = !mostrarInverso;
+        StateHasChanged();
+    }
+
+    Nodo CrearNodo()
+    {
+        return new Nodo(Valor);
+    }
+}
